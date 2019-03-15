@@ -72,13 +72,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUT_
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 endif()
 
@@ -172,17 +172,17 @@ endif()
 ################################################################################
 add_dependencies(${PROJECT_NAME}
     TAppCommon
-    TLibCommon
     TLibDecoder
     TLibVideoIO
+    TLibCommon
 )
 
 # Link with other targets.
 target_link_libraries(${PROJECT_NAME} PUBLIC
     TAppCommon
-    TLibCommon
     TLibDecoder
     TLibVideoIO
+    TLibCommon
 )
 
 
@@ -285,13 +285,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUT_
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 endif()
 
@@ -385,17 +385,17 @@ endif()
 ################################################################################
 add_dependencies(${PROJECT_NAME}
     TAppCommon
-    TLibCommon
     TLibEncoder
     TLibVideoIO
+    TLibCommon
 )
 
 # Link with other targets.
 target_link_libraries(${PROJECT_NAME} PUBLIC
     TAppCommon
-    TLibCommon
     TLibEncoder
     TLibVideoIO
+    TLibCommon
 )
 
 
@@ -496,13 +496,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${OUT_
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 endif()
 
@@ -754,13 +754,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${OUT_
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 endif()
 
@@ -977,13 +977,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${OUT_
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 endif()
 
@@ -1209,13 +1209,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${OUT_
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 endif()
 
@@ -1404,13 +1404,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${OUT_
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 endif()
 
@@ -1597,13 +1597,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUT_
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 endif()
 
@@ -1699,17 +1699,17 @@ endif()
 ################################################################################
 add_dependencies(${PROJECT_NAME}
     TAppCommon
-    TLibCommon
     TLibDecoderAnalyser
     TLibVideoIO
+    TLibCommon
 )
 
 # Link with other targets.
 target_link_libraries(${PROJECT_NAME} PUBLIC
     TAppCommon
-    TLibCommon
     TLibDecoderAnalyser
     TLibVideoIO
+    TLibCommon
 )
 
 
@@ -1836,13 +1836,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${OUT_
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 endif()
 
@@ -2031,13 +2031,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUT_
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_include_directories(${PROJECT_NAME} PUBLIC
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_include_directories(${PROJECT_NAME} PUBLIC
-          "$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib>"
+          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
     )
 endif()
 
@@ -2122,53 +2122,17 @@ endif()
 ################################################################################
 add_dependencies(${PROJECT_NAME}
     TAppCommon
-    TLibCommon
     TLibDecoder
     TLibEncoder
     TLibVideoIO
+    TLibCommon
 )
 
 # Link with other targets.
 target_link_libraries(${PROJECT_NAME} PUBLIC
     TAppCommon
-    TLibCommon
     TLibDecoder
     TLibEncoder
     TLibVideoIO
+    TLibCommon
 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-project(combined CXX)
-set(SOURCE_FILES
-        ../../source/combined/testmain.cpp
-        )
-set(ALL_FILES
-        ${SOURCE_FILES}
-        )
-
-message(WARNING ${CMAKE_SOURCE_DIR} ${PROJECT_NAME})
-
-add_executable(${PROJECT_NAME} ${ALL_FILES})
-target_include_directories(${PROJECT_NAME} PUBLIC
-        ${CMAKE_SOURCE_DIR}/../source/Lib
-        )
-add_dependencies(${PROJECT_NAME} TLibEncoder)
-target_link_libraries(${PROJECT_NAME} TLibEncoder)

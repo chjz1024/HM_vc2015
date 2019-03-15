@@ -6,3 +6,22 @@ The software has been jointly developed by the ITU-T Video Coding Experts Group 
 
 A software manual, which contains usage instructions, can be found in the "doc" subdirectory of this software package.
 
+# How to use
+This is a cmake version of project HM16.20 converted with [cmakeconverter](https://github.com/algorys/cmakeconverter). The cmake files can be used for compiliation, code hinting or any other purposes.
+
+## With plain cmake
+```
+git clone https://github.com/chjz1024/HM_vc2015.git && cd HM_vc2015/build
+cmake -DCMAKE_BUILD_TYPE=Debug|Release .
+make
+```
+
+## With CLion
+Open -> path_to_HM_vc2015 -> load build/CMakeLists.txt -> Build
+
+### Loading pytorch in this project
+Download libtorch
+Add libtorch to system path
+Add `find_package(Torch REQUIRED)` and `target_link_libraries(your-project "${TORCH_LIBRARIES}")` to the project you want to use libtorch in build/vc2015/CMakeLists.txt
+
+Details: [https://pytorch.org/tutorials/advanced/cpp_export.html](https://pytorch.org/tutorials/advanced/cpp_export.html)
