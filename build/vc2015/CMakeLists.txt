@@ -26,59 +26,33 @@ set(ALL_FILES
 ################################################################################
 add_executable(${PROJECT_NAME} ${ALL_FILES})
 
-if(NOT ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32"
-     OR "${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64"))
-    message(WARNING "${CMAKE_VS_PLATFORM_NAME} arch is not supported!")
-endif()
-
-################################################################################
-# Target name
-################################################################################
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TARGET_NAME})
+use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+set(ROOT_NAMESPACE TAppDecoder)
 
 ################################################################################
 # Output directory
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/"
     )
 endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR})
-
 ################################################################################
 # Include directories
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 endif()
 
@@ -87,27 +61,21 @@ endif()
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_DEBUG;"
-                            "_CONSOLE;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_CONSOLE;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
+        "$<$<CONFIG:Debug>:"
+            "_DEBUG"
+        ">"
+        "_CONSOLE;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "_MBCS"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_DEBUG;"
-                            "_CONSOLE;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_CONSOLE;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
+        "$<$<CONFIG:Debug>:"
+            "_DEBUG"
+        ">"
+        "_CONSOLE;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "_MBCS"
     )
 endif()
 
@@ -117,53 +85,67 @@ endif()
 if(MSVC)
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /RTC1;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Ob2;
-                                /Oi-;
-                                /GF;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /RTC1;
+                /MTd
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Ob2;
+                /Oi-;
+                /GF;
+                /MT;
+                /Gy
+            >
+            /W3;
+            /Zi;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /RTC1;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Ob2;
-                                /Oi-;
-                                /GF;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /RTC1;
+                /MTd
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Ob2;
+                /Oi-;
+                /GF;
+                /MT;
+                /Gy
+            >
+            /W3;
+            /Zi;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     endif()
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_DEBUG "/DEBUG /INCREMENTAL")
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/LTCG /DEBUG /INCREMENTAL:NO")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Debug>:
+                /INCREMENTAL
+            >
+            $<$<CONFIG:Release>:
+                /LTCG;
+                /INCREMENTAL:NO
+            >
+            /DEBUG
+        )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_DEBUG "/DEBUG /INCREMENTAL")
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/LTCG /DEBUG /INCREMENTAL:NO")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Debug>:
+                /INCREMENTAL
+            >
+            $<$<CONFIG:Release>:
+                /LTCG;
+                /INCREMENTAL:NO
+            >
+            /DEBUG
+        )
     endif()
 endif()
 
@@ -172,17 +154,17 @@ endif()
 ################################################################################
 add_dependencies(${PROJECT_NAME}
     TAppCommon
+    TLibCommon
     TLibDecoder
     TLibVideoIO
-    TLibCommon
 )
 
 # Link with other targets.
 target_link_libraries(${PROJECT_NAME} PUBLIC
     TAppCommon
+    TLibCommon
     TLibDecoder
     TLibVideoIO
-    TLibCommon
 )
 
 
@@ -239,59 +221,33 @@ set(ALL_FILES
 ################################################################################
 add_executable(${PROJECT_NAME} ${ALL_FILES})
 
-if(NOT ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32"
-     OR "${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64"))
-    message(WARNING "${CMAKE_VS_PLATFORM_NAME} arch is not supported!")
-endif()
-
-################################################################################
-# Target name
-################################################################################
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TARGET_NAME})
+use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+set(ROOT_NAMESPACE TAppEncoder)
 
 ################################################################################
 # Output directory
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/"
     )
 endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR})
-
 ################################################################################
 # Include directories
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 endif()
 
@@ -300,27 +256,21 @@ endif()
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_DEBUG;"
-                            "_CONSOLE;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_CONSOLE;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
+        "$<$<CONFIG:Debug>:"
+            "_DEBUG"
+        ">"
+        "_CONSOLE;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "_MBCS"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_DEBUG;"
-                            "_CONSOLE;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_CONSOLE;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
+        "$<$<CONFIG:Debug>:"
+            "_DEBUG"
+        ">"
+        "_CONSOLE;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "_MBCS"
     )
 endif()
 
@@ -330,53 +280,67 @@ endif()
 if(MSVC)
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /RTC1;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Ob2;
-                                /Oi-;
-                                /GF;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /RTC1;
+                /MTd
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Ob2;
+                /Oi-;
+                /GF;
+                /MT;
+                /Gy
+            >
+            /W3;
+            /Zi;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /RTC1;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Ob2;
-                                /Oi-;
-                                /GF;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /RTC1;
+                /MTd
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Ob2;
+                /Oi-;
+                /GF;
+                /MT;
+                /Gy
+            >
+            /W3;
+            /Zi;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     endif()
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_DEBUG "/DEBUG /INCREMENTAL")
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/LTCG /DEBUG /INCREMENTAL:NO")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Debug>:
+                /INCREMENTAL
+            >
+            $<$<CONFIG:Release>:
+                /LTCG;
+                /INCREMENTAL:NO
+            >
+            /DEBUG
+        )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_DEBUG "/DEBUG /INCREMENTAL")
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/LTCG /DEBUG /INCREMENTAL:NO")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Debug>:
+                /INCREMENTAL
+            >
+            $<$<CONFIG:Release>:
+                /LTCG;
+                /INCREMENTAL:NO
+            >
+            /DEBUG
+        )
     endif()
 endif()
 
@@ -385,17 +349,17 @@ endif()
 ################################################################################
 add_dependencies(${PROJECT_NAME}
     TAppCommon
+    TLibCommon
     TLibEncoder
     TLibVideoIO
-    TLibCommon
 )
 
 # Link with other targets.
 target_link_libraries(${PROJECT_NAME} PUBLIC
     TAppCommon
+    TLibCommon
     TLibEncoder
     TLibVideoIO
-    TLibCommon
 )
 
 
@@ -449,60 +413,33 @@ set(ALL_FILES
 ################################################################################
 add_library(${PROJECT_NAME} STATIC ${ALL_FILES})
 
-if(NOT ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32"
-     OR "${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64"))
-    message(WARNING "${CMAKE_VS_PLATFORM_NAME} arch is not supported!")
-endif()
-
-################################################################################
-# Target name
-################################################################################
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TARGET_NAME})
+use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+set(ROOT_NAMESPACE TAppCommon)
 
 ################################################################################
 # Output directory
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
     )
 endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${OUT_DIR})
-set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${OUT_DIR})
-
 ################################################################################
 # Include directories
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 endif()
 
@@ -511,27 +448,21 @@ endif()
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_DEBUG;"
-                            "_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
+        "$<$<CONFIG:Debug>:"
+            "_DEBUG"
+        ">"
+        "_LIB;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "_MBCS"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_DEBUG;"
-                            "_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
+        "$<$<CONFIG:Debug>:"
+            "_DEBUG"
+        ">"
+        "_LIB;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "_MBCS"
     )
 endif()
 
@@ -541,51 +472,57 @@ endif()
 if(MSVC)
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /RTC1;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Ob2;
-                                /Oi-;
-                                /GF;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /RTC1;
+                /MTd
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Ob2;
+                /Oi-;
+                /GF;
+                /MT;
+                /Gy
+            >
+            /W3;
+            /Zi;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /RTC1;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Ob2;
-                                /Oi-;
-                                /GF;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /RTC1;
+                /MTd
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Ob2;
+                /Oi-;
+                /GF;
+                /MT;
+                /Gy
+            >
+            /W3;
+            /Zi;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     endif()
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-        set_target_properties(${PROJECT_NAME} PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Release>:
+                /LTCG
+            >
+        )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-        set_target_properties(${PROJECT_NAME} PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Release>:
+                /LTCG
+            >
+        )
     endif()
 endif()
 
@@ -615,16 +552,11 @@ endif()
 
 
 
-project(TLibCommon CXX)
+project(TLibCommon C CXX)
 
 ################################################################################
 # Source groups
 ################################################################################
-set(no_group_source_files
-        ../../source/Lib/libmd5/libmd5.c
-)
-source_group("" FILES ${no_group_source_files})
-
 set(Header_Files
     ../../source/Lib/libmd5/libmd5.h
     ../../source/Lib/libmd5/MD5.h
@@ -667,6 +599,7 @@ set(Header_Files
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
+    ../../source/Lib/libmd5/libmd5.c
     ../../source/Lib/TLibCommon/ContextModel.cpp
     ../../source/Lib/TLibCommon/ContextModel3DBuffer.cpp
     ../../source/Lib/TLibCommon/Debug.cpp
@@ -697,7 +630,6 @@ set(Source_Files
 source_group("Source Files" FILES ${Source_Files})
 
 set(ALL_FILES
-    ${no_group_source_files}
     ${Header_Files}
     ${Source_Files}
 )
@@ -707,60 +639,33 @@ set(ALL_FILES
 ################################################################################
 add_library(${PROJECT_NAME} STATIC ${ALL_FILES})
 
-if(NOT ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32"
-     OR "${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64"))
-    message(WARNING "${CMAKE_VS_PLATFORM_NAME} arch is not supported!")
-endif()
-
-################################################################################
-# Target name
-################################################################################
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TARGET_NAME})
+use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+set(ROOT_NAMESPACE TLibCommon)
 
 ################################################################################
 # Output directory
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
     )
 endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${OUT_DIR})
-set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${OUT_DIR})
-
 ################################################################################
 # Include directories
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 endif()
 
@@ -769,27 +674,21 @@ endif()
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_DEBUG;"
-                            "_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
+        "$<$<CONFIG:Debug>:"
+            "_DEBUG"
+        ">"
+        "_LIB;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "_MBCS"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_DEBUG;"
-                            "_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
+        "$<$<CONFIG:Debug>:"
+            "_DEBUG"
+        ">"
+        "_LIB;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "_MBCS"
     )
 endif()
 
@@ -799,57 +698,65 @@ endif()
 if(MSVC)
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /RTC1;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Ob2;
-                                /Oi-;
-                                /GF;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /RTC1;
+                /MTd
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Ob2;
+                /Oi-;
+                /GF;
+                /MT;
+                /Gy
+            >
+            /W3;
+            /Zi;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /RTC1;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Ob2;
-                                /Oi-;
-                                /GF;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /RTC1;
+                /MTd
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Ob2;
+                /Oi-;
+                /GF;
+                /MT;
+                /Gy
+            >
+            /W3;
+            /Zi;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     endif()
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
         string(CONCAT FILE_CL_OPTIONS
-            "$<$<CONFIG:Release>:/d2Qvec-sse2only>"
+            "$<$<CONFIG:Release>:"
+                "/d2Qvec-sse2only"
+            ">"
         )
     endif()
     source_file_compile_options(../../source/Lib/TLibCommon/TComTrQuant.cpp ${FILE_CL_OPTIONS})
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-        set_target_properties(${PROJECT_NAME} PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Release>:
+                /LTCG
+            >
+        )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-        set_target_properties(${PROJECT_NAME} PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Release>:
+                /LTCG
+            >
+        )
     endif()
 endif()
 
@@ -928,62 +835,34 @@ set(ALL_FILES
 # Target
 ################################################################################
 add_library(${PROJECT_NAME} STATIC ${ALL_FILES})
-target_link_libraries(${PROJECT_NAME} PUBLIC TLibCommon)
 
-if(NOT ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32"
-     OR "${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64"))
-    message(WARNING "${CMAKE_VS_PLATFORM_NAME} arch is not supported!")
-endif()
-
-################################################################################
-# Target name
-################################################################################
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TARGET_NAME})
+use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+set(ROOT_NAMESPACE TLibDecoder)
 
 ################################################################################
 # Output directory
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
     )
 endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${OUT_DIR})
-set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${OUT_DIR})
-
 ################################################################################
 # Include directories
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 endif()
 
@@ -992,27 +871,21 @@ endif()
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_DEBUG;"
-                            "_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
+        "$<$<CONFIG:Debug>:"
+            "_DEBUG"
+        ">"
+        "_LIB;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "_MBCS"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_DEBUG;"
-                            "_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
+        "$<$<CONFIG:Debug>:"
+            "_DEBUG"
+        ">"
+        "_LIB;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "_MBCS"
     )
 endif()
 
@@ -1022,51 +895,57 @@ endif()
 if(MSVC)
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /RTC1;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Ob2;
-                                /Oi-;
-                                /GF;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /RTC1;
+                /MTd
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Ob2;
+                /Oi-;
+                /GF;
+                /MT;
+                /Gy
+            >
+            /W3;
+            /Zi;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /RTC1;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Ob2;
-                                /Oi-;
-                                /GF;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /RTC1;
+                /MTd
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Ob2;
+                /Oi-;
+                /GF;
+                /MT;
+                /Gy
+            >
+            /W3;
+            /Zi;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     endif()
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-        set_target_properties(${PROJECT_NAME} PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Release>:
+                /LTCG
+            >
+        )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-        set_target_properties(${PROJECT_NAME} PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Release>:
+                /LTCG
+            >
+        )
     endif()
 endif()
 
@@ -1160,62 +1039,34 @@ set(ALL_FILES
 # Target
 ################################################################################
 add_library(${PROJECT_NAME} STATIC ${ALL_FILES})
-target_link_libraries(${PROJECT_NAME} PUBLIC TLibCommon)
 
-if(NOT ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32"
-     OR "${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64"))
-    message(WARNING "${CMAKE_VS_PLATFORM_NAME} arch is not supported!")
-endif()
-
-################################################################################
-# Target name
-################################################################################
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TARGET_NAME})
+use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+set(ROOT_NAMESPACE TLibEncoder)
 
 ################################################################################
 # Output directory
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
     )
 endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${OUT_DIR})
-set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${OUT_DIR})
-
 ################################################################################
 # Include directories
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 endif()
 
@@ -1224,31 +1075,23 @@ endif()
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_DEBUG;"
-                            "_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_SCL_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_SCL_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
+        "$<$<CONFIG:Debug>:"
+            "_DEBUG"
+        ">"
+        "_LIB;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "_SCL_SECURE_NO_WARNINGS;"
+        "_MBCS"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_DEBUG;"
-                            "_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_SCL_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_SCL_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
+        "$<$<CONFIG:Debug>:"
+            "_DEBUG"
+        ">"
+        "_LIB;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "_SCL_SECURE_NO_WARNINGS;"
+        "_MBCS"
     )
 endif()
 
@@ -1258,51 +1101,57 @@ endif()
 if(MSVC)
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /RTC1;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Ob2;
-                                /Oi-;
-                                /GF;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /RTC1;
+                /MTd
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Ob2;
+                /Oi-;
+                /GF;
+                /MT;
+                /Gy
+            >
+            /W3;
+            /Zi;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /RTC1;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Ob2;
-                                /Oi-;
-                                /GF;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /RTC1;
+                /MTd
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Ob2;
+                /Oi-;
+                /GF;
+                /MT;
+                /Gy
+            >
+            /W3;
+            /Zi;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     endif()
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-        set_target_properties(${PROJECT_NAME} PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Release>:
+                /LTCG
+            >
+        )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-        set_target_properties(${PROJECT_NAME} PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Release>:
+                /LTCG
+            >
+        )
     endif()
 endif()
 
@@ -1357,60 +1206,33 @@ set(ALL_FILES
 ################################################################################
 add_library(${PROJECT_NAME} STATIC ${ALL_FILES})
 
-if(NOT ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32"
-     OR "${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64"))
-    message(WARNING "${CMAKE_VS_PLATFORM_NAME} arch is not supported!")
-endif()
-
-################################################################################
-# Target name
-################################################################################
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TARGET_NAME})
+use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+set(ROOT_NAMESPACE TLibVideoIo)
 
 ################################################################################
 # Output directory
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
     )
 endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${OUT_DIR})
-set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${OUT_DIR})
-
 ################################################################################
 # Include directories
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 endif()
 
@@ -1419,27 +1241,21 @@ endif()
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_DEBUG;"
-                            "_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
+        "$<$<CONFIG:Debug>:"
+            "_DEBUG"
+        ">"
+        "_LIB;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "_MBCS"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_DEBUG;"
-                            "_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
+        "$<$<CONFIG:Debug>:"
+            "_DEBUG"
+        ">"
+        "_LIB;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "_MBCS"
     )
 endif()
 
@@ -1449,51 +1265,57 @@ endif()
 if(MSVC)
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /RTC1;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Ob2;
-                                /Oi-;
-                                /GF;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /RTC1;
+                /MTd
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Ob2;
+                /Oi-;
+                /GF;
+                /MT;
+                /Gy
+            >
+            /W3;
+            /Zi;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /RTC1;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Ob2;
-                                /Oi-;
-                                /GF;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /RTC1;
+                /MTd
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Ob2;
+                /Oi-;
+                /GF;
+                /MT;
+                /Gy
+            >
+            /W3;
+            /Zi;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     endif()
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-        set_target_properties(${PROJECT_NAME} PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Release>:
+                /LTCG
+            >
+        )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-        set_target_properties(${PROJECT_NAME} PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Release>:
+                /LTCG
+            >
+        )
     endif()
 endif()
 
@@ -1551,59 +1373,33 @@ set(ALL_FILES
 ################################################################################
 add_executable(${PROJECT_NAME} ${ALL_FILES})
 
-if(NOT ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32"
-     OR "${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64"))
-    message(WARNING "${CMAKE_VS_PLATFORM_NAME} arch is not supported!")
-endif()
-
-################################################################################
-# Target name
-################################################################################
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TARGET_NAME})
+use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+set(ROOT_NAMESPACE TAppDecoderAnalyser)
 
 ################################################################################
 # Output directory
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/"
     )
 endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR})
-
 ################################################################################
 # Include directories
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 endif()
 
@@ -1612,29 +1408,22 @@ endif()
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_DEBUG;"
-                            "_CONSOLE;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "RExt__DECODER_DEBUG_BIT_STATISTICS=1;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_CONSOLE;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "RExt__DECODER_DEBUG_BIT_STATISTICS=1;"
-                            "_MBCS"
-                            ">"
+        "$<$<CONFIG:Debug>:"
+            "_DEBUG"
+        ">"
+        "_CONSOLE;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "RExt__DECODER_DEBUG_BIT_STATISTICS=1;"
+        "_MBCS"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_DEBUG;"
-                            "_CONSOLE;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_CONSOLE;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
+        "$<$<CONFIG:Debug>:"
+            "_DEBUG"
+        ">"
+        "_CONSOLE;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "_MBCS"
     )
 endif()
 
@@ -1644,53 +1433,67 @@ endif()
 if(MSVC)
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /RTC1;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Ob2;
-                                /Oi-;
-                                /GF;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /RTC1;
+                /MTd
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Ob2;
+                /Oi-;
+                /GF;
+                /MT;
+                /Gy
+            >
+            /W3;
+            /Zi;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /RTC1;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Ob2;
-                                /Oi-;
-                                /GF;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /RTC1;
+                /MTd
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Ob2;
+                /Oi-;
+                /GF;
+                /MT;
+                /Gy
+            >
+            /W3;
+            /Zi;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     endif()
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_DEBUG "/DEBUG /INCREMENTAL")
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/LTCG /DEBUG /INCREMENTAL:NO")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Debug>:
+                /INCREMENTAL
+            >
+            $<$<CONFIG:Release>:
+                /LTCG;
+                /INCREMENTAL:NO
+            >
+            /DEBUG
+        )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_DEBUG "/DEBUG /INCREMENTAL")
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/LTCG /DEBUG /INCREMENTAL:NO")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Debug>:
+                /INCREMENTAL
+            >
+            $<$<CONFIG:Release>:
+                /LTCG;
+                /INCREMENTAL:NO
+            >
+            /DEBUG
+        )
     endif()
 endif()
 
@@ -1699,17 +1502,17 @@ endif()
 ################################################################################
 add_dependencies(${PROJECT_NAME}
     TAppCommon
+    TLibCommon
     TLibDecoderAnalyser
     TLibVideoIO
-    TLibCommon
 )
 
 # Link with other targets.
 target_link_libraries(${PROJECT_NAME} PUBLIC
     TAppCommon
+    TLibCommon
     TLibDecoderAnalyser
     TLibVideoIO
-    TLibCommon
 )
 
 
@@ -1787,62 +1590,34 @@ set(ALL_FILES
 # Target
 ################################################################################
 add_library(${PROJECT_NAME} STATIC ${ALL_FILES})
-target_link_libraries(${PROJECT_NAME} PUBLIC TLibDecoder)
 
-if(NOT ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32"
-     OR "${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64"))
-    message(WARNING "${CMAKE_VS_PLATFORM_NAME} arch is not supported!")
-endif()
-
-################################################################################
-# Target name
-################################################################################
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TARGET_NAME})
+use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+set(ROOT_NAMESPACE TLibDecoderAnalyser)
 
 ################################################################################
 # Output directory
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${PROJECT_NAME}/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/${ROOT_NAMESPACE}/"
     )
 endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${OUT_DIR})
-set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${OUT_DIR})
-
 ################################################################################
 # Include directories
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    target_include_directories(${PROJECT_NAME} PUBLIC 
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 endif()
 
@@ -1851,29 +1626,22 @@ endif()
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_DEBUG;"
-                            "_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "RExt__DECODER_DEBUG_BIT_STATISTICS=1;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "RExt__DECODER_DEBUG_BIT_STATISTICS=1;"
-                            "_MBCS"
-                            ">"
+        "$<$<CONFIG:Debug>:"
+            "_DEBUG"
+        ">"
+        "_LIB;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "RExt__DECODER_DEBUG_BIT_STATISTICS=1;"
+        "_MBCS"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_DEBUG;"
-                            "_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_LIB;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
+        "$<$<CONFIG:Debug>:"
+            "_DEBUG"
+        ">"
+        "_LIB;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "_MBCS"
     )
 endif()
 
@@ -1883,51 +1651,57 @@ endif()
 if(MSVC)
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /RTC1;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Ob2;
-                                /Oi-;
-                                /GF;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /RTC1;
+                /MTd
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Ob2;
+                /Oi-;
+                /GF;
+                /MT;
+                /Gy
+            >
+            /W3;
+            /Zi;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /RTC1;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Ob2;
-                                /Oi-;
-                                /GF;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /RTC1;
+                /MTd
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Ob2;
+                /Oi-;
+                /GF;
+                /MT;
+                /Gy
+            >
+            /W3;
+            /Zi;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     endif()
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-        set_target_properties(${PROJECT_NAME} PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Release>:
+                /LTCG
+            >
+        )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-        set_target_properties(${PROJECT_NAME} PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Release>:
+                /LTCG
+            >
+        )
     endif()
 endif()
 
@@ -1985,59 +1759,33 @@ set(ALL_FILES
 ################################################################################
 add_executable(${PROJECT_NAME} ${ALL_FILES})
 
-if(NOT ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32"
-     OR "${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64"))
-    message(WARNING "${CMAKE_VS_PLATFORM_NAME} arch is not supported!")
-endif()
-
-################################################################################
-# Target name
-################################################################################
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT TARGET_NAME
-          $<$<CONFIG:Debug>:${PROJECT_NAME}>
-        $<$<CONFIG:Release>:${PROJECT_NAME}>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${PROJECT_NAME}>
-    )
-endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TARGET_NAME})
+use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+set(ROOT_NAMESPACE TAppMCTSExtractor)
 
 ################################################################################
 # Output directory
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    string(CONCAT OUT_DIR
-          $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/>
-        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>>
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/"
+        OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}//../bin/vc2015/${CMAKE_VS_PLATFORM_NAME}/$<CONFIG>/"
     )
 endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR})
-
 ################################################################################
 # Include directories
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_include_directories(${PROJECT_NAME} PUBLIC
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_include_directories(${PROJECT_NAME} PUBLIC
-          "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/../source/Lib>"
-        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/../source/Lib>"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../source/Lib"
     )
 endif()
 
@@ -2046,26 +1794,17 @@ endif()
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_DEBUG;"
-                            "_CONSOLE;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_CONSOLE;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
+        "$<$<CONFIG:Debug>:"
+            "_DEBUG"
+        ">"
+        "_CONSOLE;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "_MBCS"
     )
 elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-          "$<$<CONFIG:Debug>:_MBCS;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
-        "$<$<CONFIG:Release>:_MBCS;"
-                            "_CRT_SECURE_NO_WARNINGS;"
-                            "_MBCS"
-                            ">"
+        "_MBCS;"
+        "_CRT_SECURE_NO_WARNINGS"
     )
 endif()
 
@@ -2075,45 +1814,56 @@ endif()
 if(MSVC)
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Oi;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /MTd;
+                /Zi
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Oi;
+                /MT;
+                /Gy
+            >
+            /W3;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
         target_compile_options(${PROJECT_NAME} PRIVATE
-              $<$<CONFIG:Debug>:/Od;
-                                /MTd;
-                                /W3;
-                                /Zi;
-                                /EHsc
-                                >
-            $<$<CONFIG:Release>:/GL;
-                                /O2;
-                                /Oi;
-                                /MT;
-                                /Gy;
-                                /W3;
-                                /EHsc
-                                >
+            $<$<CONFIG:Debug>:
+                /Od;
+                /MTd;
+                /Zi
+            >
+            $<$<CONFIG:Release>:
+                /GL;
+                /O2;
+                /Oi;
+                /MT;
+                /Gy
+            >
+            /W3;
+            ${DEFAULT_CXX_EXCEPTION_HANDLING}
         )
     endif()
     if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_DEBUG "/DEBUG")
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/LTCG /DEBUG:FULL")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Debug>:
+                /DEBUG
+            >
+            $<$<CONFIG:Release>:
+                /LTCG;
+                /DEBUG:FULL
+            >
+        )
     elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_DEBUG "/DEBUG:FULL")
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/LTCG /DEBUG:FULL")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            $<$<CONFIG:Release>:
+                /LTCG
+            >
+            /DEBUG:FULL
+        )
     endif()
 endif()
 
@@ -2122,17 +1872,18 @@ endif()
 ################################################################################
 add_dependencies(${PROJECT_NAME}
     TAppCommon
+    TLibCommon
     TLibDecoder
     TLibEncoder
     TLibVideoIO
-    TLibCommon
 )
 
 # Link with other targets.
 target_link_libraries(${PROJECT_NAME} PUBLIC
     TAppCommon
+    TLibCommon
     TLibDecoder
     TLibEncoder
     TLibVideoIO
-    TLibCommon
 )
+

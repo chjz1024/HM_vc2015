@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.13.0 FATAL_ERROR)
 
 project(HM_vc2015)
 
@@ -9,6 +9,11 @@ if(NOT CMAKE_VS_PLATFORM_NAME)
     set(CMAKE_VS_PLATFORM_NAME "x64")
 endif()
 message("${CMAKE_VS_PLATFORM_NAME} architecture in use")
+
+if(NOT ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32"
+     OR "${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64"))
+    message(FATAL_ERROR "${CMAKE_VS_PLATFORM_NAME} arch is not supported!")
+endif()
 
 ################################################################################
 # Global configuration types
@@ -24,6 +29,9 @@ set(CMAKE_CONFIGURATION_TYPES
 ################################################################################
 if(MSVC)
     # remove default flags provided with CMake for MSVC
+    set(CMAKE_C_FLAGS "")
+    set(CMAKE_C_FLAGS_DEBUG "")
+    set(CMAKE_C_FLAGS_RELEASE "")
     set(CMAKE_CXX_FLAGS "")
     set(CMAKE_CXX_FLAGS_DEBUG "")
     set(CMAKE_CXX_FLAGS_RELEASE "")
